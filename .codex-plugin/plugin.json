@@ -46,6 +46,7 @@
     "websiteURL": "https://www.exmergo.com/dex",
     "supportURL": "https://github.com/exmergo/dex/issues",
     "privacyPolicyURL": "https://www.exmergo.com/privacy/dex",
+    "termsOfServiceURL": "https://www.exmergo.com/terms/dex",
     "composerIcon": "./assets/icon.png",
     "logo": "./assets/icon.png",
     "defaultPrompt": [

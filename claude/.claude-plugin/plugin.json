@@ -12,6 +12,7 @@
   "repository": "https://github.com/exmergo/dex",
   "license": "Apache-2.0",
   "privacyPolicyUrl": "https://www.exmergo.com/privacy/dex",
+  "termsOfServiceUrl": "https://www.exmergo.com/terms/dex",
   "supportUrl": "https://github.com/exmergo/dex/issues",
   "keywords": [
     "analytics-engineering",

@@ -341,12 +341,13 @@ and treat these scores as guide posts. ([evaluation](https://docs.exmergo.com/de
 - **On install**, `uv` downloads the pinned engine (and a Python 3.11 to 3.14 if you have none) from PyPI or your configured index.
 - **Your warehouse** gets SELECT-only SQL from Dex, plus the dbt builds you confirm on a dev target, with credentials from your existing credential chain.
 - **dbt Cloud** is contacted only if you enable the hosted semantic layer.
-- **dbt-core**, when Dex runs it, sends dbt Labs its own anonymous usage statistics unless you turn them off. `transform deps` downloads the packages your `packages.yml` declares.
+- **dbt-core**, when Dex runs it, sends dbt Labs no usage statistics: Dex sets `DO_NOT_TRACK=1` for every dbt process it starts. `transform deps` downloads the packages your `packages.yml` declares.
 - **Your repository** holds Dex's state in `.dex/`. dbt writes its usual `target/` and `logs/`.
 
 > [!IMPORTANT]
 > **Dex sends nothing to Exmergo.** No telemetry, analytics, license check, or
-> update ping. See the [Dex privacy policy](https://www.exmergo.com/privacy/dex).
+> update ping. See the [Dex privacy policy](https://www.exmergo.com/privacy/dex)
+> and the [Dex terms of service](https://www.exmergo.com/terms/dex).
 
 ## Further reading
 
@@ -394,4 +395,6 @@ see the change. Please also read the [code of conduct](https://github.com/exmerg
 
 ## License
 
-Apache-2.0. See [LICENSE](https://github.com/exmergo/dex/blob/main/LICENSE) and [NOTICE](https://github.com/exmergo/dex/blob/main/NOTICE).
+Apache-2.0. See [LICENSE](https://github.com/exmergo/dex/blob/main/LICENSE) and [NOTICE](https://github.com/exmergo/dex/blob/main/NOTICE). The licence governs the
+software. Exmergo's distribution, documentation, support, and trademarks are
+covered by the [Dex terms of service](https://www.exmergo.com/terms/dex).
