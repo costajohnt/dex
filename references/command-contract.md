@@ -412,7 +412,9 @@ dex maintain semantic [<objects>] -> definition drift and dangling refs (free) +
 dex maintain reconcile [<class>]  -> propose the edits that reconcile detected drift, as a stored plan
                                      of diffs tagged mechanical/advisory (applied with transform apply);
                                      a SLayer or Cube layer's own removals as a second plan,
-                                     semantic_plan_id
+                                     semantic_plan_id;
+                                     cardinality advisories distinguish expansion from contraction
+                                     using available counts, and flag approximate counts as uncertain
 dex maintain verify [<selector>]  -> is the project correct right now, no .dex/snapshot.json baseline
                                      required (unlike every subcommand above). Build status:
                                      failed/skipped build nodes (naming the failed cause, walking back
