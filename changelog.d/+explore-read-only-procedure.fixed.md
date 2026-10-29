@@ -1,0 +1,1 @@
+**The Explore skill stays read-only.** The procedure the three skills share now says that planning, applying, committing and building happen only when the task asks for a change, so a question about what is in the data ends after exploration rather than continuing into the project.
