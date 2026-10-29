@@ -110,6 +110,16 @@ transformation project.
 A worked end-to-end example on a local warehouse, for a human reader:
 <https://github.com/exmergo/dex/blob/main/references/ossie-walkthrough.md>.
 
+## Cube models: not authored yet
+
+Under `semantic.vendor: cube`, the configured Cube YAML files are the semantic
+layer, and Dex reads them (`explore semantic list`, `--use-project`, `maintain`)
+but does not author them in this release: there is no `semantic cube` command
+yet. Edit a Cube model file by hand and let the reviewer see the diff, and do not
+generate one with `cube_dbt`. A declared mart gets no `data.semantic_proposal`
+under `vendor: cube` yet: the Cube layer does not implement the derivation hook
+(#911), and a warning says so.
+
 ## SLayer models: `semantic slayer define|update|plan`
 
 Under `semantic.vendor: slayer`, the configured SLayer model files are the

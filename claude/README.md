@@ -250,7 +250,7 @@ but it is local spend history, so there is no reason to commit it.
 | <img src="https://www.exmergo.com/connectors/databricks.png" width="20" height="20" alt=""> [**Databricks**](https://docs.exmergo.com/dex/connectors/databricks) | Cloud warehouse | ❌ | `databricks` | Warehouse-seconds, with DBUs | `databricks auth login`, `DATABRICKS_*` env, or a dbt profile |
 | <img src="https://www.exmergo.com/connectors/redshift.png" width="20" height="20" alt=""> [**Amazon Redshift**](https://docs.exmergo.com/dex/connectors/redshift) | Cloud warehouse, Serverless-first | ❌ | `redshift` | Compute-seconds, with RPU-hours | The AWS credential chain or `REDSHIFT_*` env |
 | <img src="https://www.exmergo.com/connectors/clickhouse.png" width="20" height="20" alt=""> [**ClickHouse**](https://docs.exmergo.com/dex/connectors/clickhouse) | Analytical database | ✅ | `clickhouse` | Compute-seconds on Cloud, database-seconds self-hosted | `CLICKHOUSE_URL`, `CLICKHOUSE_*` env, or a dbt profile |
-| <img src="https://www.exmergo.com/connectors/trino.png" width="20" height="20" alt=""> [**Trino**](https://docs.exmergo.com/dex/connectors/trino) | Federated query engine (Trino, Starburst Enterprise, Trino on EMR) | ✅ | `trino` | Cluster-seconds | `TRINO_URL`, `TRINO_*` env, or a dbt profile |
+| <img src="https://www.exmergo.com/connectors/trino.png" width="20" height="20" alt=""> [**Trino**](https://docs.exmergo.com/dex/connectors/trino) | Federated query engine | ✅ | `trino` | Cluster-seconds | `TRINO_URL`, `TRINO_*` env, or a dbt profile |
 | <img src="https://www.exmergo.com/connectors/duckdb.png" width="20" height="20" alt=""> [**DuckDB**](https://docs.exmergo.com/dex/connectors/duckdb) | Embedded analytical | ✅ | `duckdb` | Free and local | None, just a file path |
 | <img src="https://www.exmergo.com/connectors/postgresql.png" width="20" height="20" alt=""> [**Postgres**](https://docs.exmergo.com/dex/connectors/postgres) | Operational database | ✅ | `postgres` | Database-seconds | `pg_service.conf`, `DATABASE_URL`, `PG*` env, or a dbt profile |
 
@@ -267,17 +267,11 @@ scan on a production Postgres primary is a real cost too.
 The semantic layer is its own axis, chosen once per repository in `.dex/config.yml`.
 With Ossie or SLayer, it needs no dbt project at all. ([overview](https://docs.exmergo.com/dex/semantic-layers/overview))
 
-| Semantic layer | Hosted | Queryable | `vendor` / `deployment` | Read through |
-| --- | :---: | :---: | --- | --- |
-| <img src="https://www.exmergo.com/connectors/dbt.png" width="20" height="20" alt=""> **dbt** | ✅ | ✅ | `dbt` / `local` or `dbt_cloud` | MetricFlow locally, run through the Dex connector and its cost guard, or the hosted dbt Cloud Semantic Layer API |
-| <img src="https://www.exmergo.com/connectors/ossie.png" width="20" height="20" alt=""> **[Apache Ossie](https://github.com/apache/ossie)** (incubating) | ❌ | ❌ | `ossie` / `local` | Native documents in the repository, no dbt or MetricFlow in the path |
-| **[SLayer](https://github.com/MotleyAI/slayer)** | ❌ | ✅ | `slayer` / `local` | SLayer model files, validated by one pinned release; SLayer renders, Dex runs it under the cost guard |
-
-Ossie is catalog-first because the format specifies interchange metadata and no
-query runtime, so Dex reads, authors, and checks an Ossie layer but refuses a metric
-query by name rather than inventing semantics. See the
-[Ossie page](https://docs.exmergo.com/dex/semantic-layers/ossie) and the
-[Ossie tutorial](https://docs.exmergo.com/dex/guides/ossie-semantic-layer).
+| Semantic layer | Hosted | Queryable | `vendor` / `deployment` | Read through | Documentation |
+| --- | :---: | :---: | --- | --- | --- |
+| <img src="https://www.exmergo.com/connectors/ossie.png" width="20" height="20" alt=""> **[Apache Ossie](https://github.com/apache/ossie)** (incubating) | ❌ | ❌ | `ossie` / `local` | Native documents in the repository, no dbt or MetricFlow in the path | [Docs](https://docs.exmergo.com/dex/semantic-layers/ossie) |
+| <img src="https://www.exmergo.com/connectors/dbt.png" width="20" height="20" alt=""> **[dbt](https://github.com/dbt-labs/dbt-core)** | ✅ | ✅ | `dbt` / `local` or `dbt_cloud` | MetricFlow locally, run through the Dex connector and its cost guard, or the hosted dbt Cloud Semantic Layer API | [Docs](https://docs.exmergo.com/dex/semantic-layers/overview#choosing-a-backend-ambient-like-a-connector) |
+| **[SLayer](https://github.com/MotleyAI/slayer)** | ❌ | ✅ | `slayer` / `local` | SLayer model files, validated by one pinned release; SLayer renders, Dex runs it under the cost guard | [Docs](https://docs.exmergo.com/dex/semantic-layers/overview#slayer-models-vendor-slayer) |
 
 **Coming next:** Cube, Snowflake Semantic Views, Looker / LookML, and Databricks Metric Views.
 
@@ -372,9 +366,9 @@ Apache-2.0. [Learn more](https://www.exmergo.com/dex/enterprise).
 
 ### Community Integrations
 
-**[dagster-dex](https://github.com/catincloud-labs/dagster-dex)**, maintained by
-CatInCloud Labs, lets Dex read a Dagster asset graph instead of a dbt project, so
-exploration and drift maintenance run natively against your orchestrated assets.
+| Integration | Maintainer | What it does |
+| --- | --- | --- |
+| <img src="https://raw.githubusercontent.com/exmergo/dex/main/assets/dagster-logo.png" width="20" height="20" alt=""> **[dagster-dex](https://github.com/catincloud-labs/dagster-dex)** | <img src="https://raw.githubusercontent.com/exmergo/dex/main/assets/catincloudlabs-logo.png" width="20" height="20" alt=""> [CatInCloud Labs](https://github.com/catincloud-labs) | Explore and maintain your Dagster assets with Dex, using the asset graph in place of a dbt project. |
 
 ### Connect with the Community
 
