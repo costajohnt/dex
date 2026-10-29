@@ -193,6 +193,15 @@ and re-plan.
 The refusal is a backstop, not a guide: the gaps below are what to write
 instead.
 
+**A declared mart derives its SLayer model.** Under `vendor: slayer`,
+`transform plan` on a declared mart proposes `models/<data_source>/<mart>.yaml`
+(primary key from the grain, joins from foreign keys, saved measures
+`<column>_<agg>` from declared aggregations, population and units in `meta.dex`),
+stored as a second plan when that path is already under `semantic.slayer.models`.
+`semantic slayer define|update|plan` also take `declarations`, which annotate a
+model the payload or the layer defines. See
+[declarations.md](declarations.md#slayer-semanticvendor-slayer).
+
 ### What SLayer does not declare
 
 Dex's catalog is shaped by MetricFlow; SLayer is not. Do not carry MetricFlow
