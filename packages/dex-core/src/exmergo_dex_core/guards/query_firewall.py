@@ -742,6 +742,8 @@ def _resolve_sources(
                     f"duplicate source alias '{key}'; give each unnest its own alias"
                 )
             sources[key] = outputs
+        elif isinstance(node, exp.Values):
+            sources[alias] = _values_source(node)
         else:
             raise QueryRefusedError(
                 f"unsupported FROM source: {type(node).__name__}; query cached "
@@ -756,6 +758,34 @@ def _resolve_sources(
             )
         sources[key] = outputs
     return sources
+
+
+def _values_source(node: exp.Values) -> _Outputs:
+    """Admit an inline ``VALUES`` list as a FROM source, or refuse it.
+
+    A list of literal rows (``cross join (values (7), (28)) as w (window_days)``)
+    is self-contained: it reads no relation and carries no profile, so it needs
+    nothing from the cache and its columns carry no taint. What it must not be
+    is a side door. A row that reads a column or a subquery would reach data by
+    a path the resolution above never saw, so the rows must be literals, and the
+    columns must be named so every reference to them resolves by name rather than
+    by a dialect's positional default (``col0`` here, ``column1`` there).
+    """
+
+    table_alias = node.args.get("alias")
+    columns = [c.name.lower() for c in table_alias.columns] if table_alias else []
+    if not columns:
+        raise QueryRefusedError(
+            "alias the VALUES list and name its columns, e.g. "
+            "(VALUES (7), (28)) AS windows (window_days)"
+        )
+    for row in node.expressions:
+        if row.find(exp.Column, exp.Subquery, exp.Select, exp.Table):
+            raise QueryRefusedError(
+                "VALUES rows must be literals; a column, subquery or relation "
+                "inside one is not allowed"
+            )
+    return {name: set() for name in columns}
 
 
 def _array_join_source(
