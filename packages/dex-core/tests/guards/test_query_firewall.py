@@ -918,6 +918,16 @@ VALUES_ALLOWED = [
         "CROSS JOIN (VALUES (7, 'week'), (28, 'month')) AS w (n, label)",
     ),
     ("duckdb", "SELECT w.* FROM RAW_HOSTS, (VALUES (7), (28)) AS w (window_days)"),
+    (
+        "duckdb",
+        "SELECT w.v FROM RAW_HOSTS, (VALUES (-1, NULL, TRUE, 'x')) AS w (v, a, b, c)",
+    ),
+    ("duckdb", "SELECT w.v FROM RAW_HOSTS, (VALUES (-(1))) AS w (v)"),
+    (
+        "clickhouse",
+        "SELECT w.n FROM RAW_HOSTS, "
+        "(VALUES (7, 'week'), (28, 'month')) AS w (n, label)",
+    ),
 ]
 
 
@@ -937,13 +947,45 @@ VALUES_REFUSED = [
     (
         "duckdb",
         "SELECT w.v FROM RAW_HOSTS, (VALUES (PROFILE)) AS w (v)",
-        "must be literals",
+        "must be plain literals",
     ),
     (
         "duckdb",
         "SELECT w.v FROM RAW_HOSTS, "
         "(VALUES ((SELECT PROFILE FROM RAW_HOSTS))) AS w (v)",
-        "must be literals",
+        "must be plain literals",
+    ),
+    # Constant expressions are not literals either.
+    (
+        "duckdb",
+        "SELECT w.v FROM RAW_HOSTS, (VALUES (1 + 1)) AS w (v)",
+        "must be plain literals",
+    ),
+    (
+        "duckdb",
+        "SELECT w.v FROM RAW_HOSTS, (VALUES (UPPER('a'))) AS w (v)",
+        "must be plain literals",
+    ),
+    (
+        "duckdb",
+        "SELECT w.v FROM RAW_HOSTS, (VALUES (-'x')) AS w (v)",
+        "must be plain literals",
+    ),
+    (
+        "duckdb",
+        "SELECT w.v FROM RAW_HOSTS, (VALUES (DATE '2020-01-01')) AS w (v)",
+        "must be plain literals",
+    ),
+    # Only a one-element tuple is unwrapped: a column cannot ride in a second slot.
+    (
+        "clickhouse",
+        "SELECT w.v FROM RAW_HOSTS, (VALUES ((1, PROFILE))) AS w (v)",
+        "must be plain literals",
+    ),
+    (
+        "clickhouse",
+        "SELECT w.v FROM RAW_HOSTS, (VALUES (1 + 1)) AS w (v)",
+        "must be plain literals",
     ),
     # Its columns are the only names it has: a stray column is still unknown.
     (

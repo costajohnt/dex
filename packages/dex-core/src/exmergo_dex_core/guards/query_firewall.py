@@ -767,9 +767,10 @@ def _values_source(node: exp.Values) -> _Outputs:
     is self-contained: it reads no relation and carries no profile, so it needs
     nothing from the cache and its columns carry no taint. What it must not be
     is a side door. A row that reads a column or a subquery would reach data by
-    a path the resolution above never saw, so the rows must be literals, and the
-    columns must be named so every reference to them resolves by name rather than
-    by a dialect's positional default (``col0`` here, ``column1`` there).
+    a path the resolution above never saw, so the rows must be plain literals (not
+    even a constant expression), and the columns must be named so every reference
+    to them resolves by name rather than by a dialect's positional default
+    (``col0`` here, ``column1`` there).
     """
 
     table_alias = node.args.get("alias")
@@ -780,11 +781,22 @@ def _values_source(node: exp.Values) -> _Outputs:
             "(VALUES (7), (28)) AS windows (window_days)"
         )
     for row in node.expressions:
-        if row.find(exp.Column, exp.Subquery, exp.Select, exp.Table):
-            raise QueryRefusedError(
-                "VALUES rows must be literals; a column, subquery or relation "
-                "inside one is not allowed"
-            )
+        for cell in row.expressions if isinstance(row, exp.Tuple) else [row]:
+            # Parentheses and a minus on a number still wrap a literal, and
+            # ClickHouse parses each cell as a one-element tuple.
+            negated = False
+            while isinstance(cell, (exp.Neg, exp.Paren)) or (
+                isinstance(cell, exp.Tuple) and len(cell.expressions) == 1
+            ):
+                negated = negated or isinstance(cell, exp.Neg)
+                cell = cell.expressions[0] if isinstance(cell, exp.Tuple) else cell.this
+            if not isinstance(cell, (exp.Literal, exp.Null, exp.Boolean)) or (
+                negated and not cell.is_number
+            ):
+                raise QueryRefusedError(
+                    "VALUES rows must be plain literals; an expression, column, "
+                    "subquery or relation inside one is not allowed"
+                )
     return {name: set() for name in columns}
 
 
