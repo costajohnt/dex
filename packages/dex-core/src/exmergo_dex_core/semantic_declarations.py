@@ -25,6 +25,7 @@ with why, so nothing a declaration says vanishes on the way into a layer.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable, Mapping
 from enum import Enum
 from typing import Any
@@ -253,6 +254,11 @@ def with_population(description: Any, population: Any) -> str | None:
     return f"{text} {sentence}"
 
 
+# Any spelling of the marker counts once population metadata is present: a
+# suffix that drifted from the writer's exact form still carries its values.
+_POPULATION_MARKER = re.compile(r"\bpopulation\s*:", re.IGNORECASE)
+
+
 def catalog_description(
     description: Any, metadata: Any, notes: list[str]
 ) -> str | None:
@@ -269,7 +275,7 @@ def catalog_description(
     dex = metadata.get(DEX_META_KEY) if isinstance(metadata, Mapping) else None
     if not isinstance(dex, Mapping) or "population" not in dex:
         return description
-    if "Population: " not in description:
+    if not _POPULATION_MARKER.search(description):
         return description
     try:
         sentence = population_sentence(dex["population"])
@@ -278,7 +284,10 @@ def catalog_description(
     if sentence and description == sentence:
         return None
     if sentence and description.endswith(" " + sentence):
-        return description[: -len(sentence)].rstrip() or None
+        prefix = description[: -len(sentence)].rstrip()
+        # An older sentence may sit ahead of the current one.
+        if not _POPULATION_MARKER.search(prefix):
+            return prefix or None
     notes.append(
         "a description with population metadata has a stale or unrecognized "
         "population sentence; the description is withheld"
