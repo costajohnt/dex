@@ -254,9 +254,10 @@ def with_population(description: Any, population: Any) -> str | None:
     return f"{text} {sentence}"
 
 
-# Any spelling of the marker counts once population metadata is present: a
-# suffix that drifted from the writer's exact form still carries its values.
-_POPULATION_MARKER = re.compile(r"\bpopulation\s*:", re.IGNORECASE)
+# Any mention of the word counts once population metadata is present: a
+# suffix that drifted from the writer's exact form (another separator, none,
+# a plural or a key-style spelling) still carries its values.
+_POPULATION_MARKER = re.compile(r"population", re.IGNORECASE)
 
 
 def catalog_description(

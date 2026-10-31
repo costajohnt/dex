@@ -518,6 +518,11 @@ def test_catalog_withholds_stale_or_malformed_population_description(population)
         "Orders. population: private-person@example.test.",
         "Orders. Population:private-person@example.test.",
         "Orders. Population: old-rule. Population: private-person@example.test.",
+        "Orders. Population - private-person@example.test.",
+        "Orders. Population private-person@example.test.",
+        "Orders. Population = private-person@example.test.",
+        "Orders. Populations: private-person@example.test.",
+        "Orders. population_rule: private-person@example.test.",
     ],
 )
 def test_catalog_withholds_population_suffix_with_drifted_marker(description):
